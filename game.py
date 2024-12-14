@@ -53,7 +53,7 @@ class Game:
         moves = ['hit', 'stand']
         if self.ruleset.surrender:
             moves.append('surrender')
-        if len(hand) == 2 and hand[0] == hand[1]:
+        if len(hand) == 2 and hand[0].rank == hand[1].rank:
             moves.append('split')
         if not (hand.split and not self.ruleset.das):
             moves.append('double')
@@ -110,7 +110,7 @@ class Game:
         print("---Results---")
 
         dealer_total = self.dealer.hand.total
-        print(f"Dealer: {self.dealer.hand}")
+        print(f"Dealer:\n{self.dealer.hand}")
 
         print("Player:")
         for hand in self.player.hands:
@@ -131,5 +131,8 @@ class Game:
             elif hand.total == dealer_total:
                 self.player.bankroll += hand.bet  # Push
                 print("(Push)")
+            elif hand.total < dealer_total:  # Player loses
+                print("(Lose)")
             else:
                 raise Exception("Something went wrong")
+        print()

@@ -20,7 +20,7 @@ class Card:
     def __str__(self):
         return f'{self.rank}{Card.suits[self.suit]}'
 
-    def value(self):
+    def get_value(self):
         return Card.value[self.rank]
 
 
@@ -44,7 +44,7 @@ class Shoe():
         random.shuffle(self.cards)
 
     def deal(self):
-        return self.pop()
+        return self.cards.pop()
 
 
 if __name__ == '__main__':
