@@ -56,6 +56,7 @@ class Player:
 
     def new_round(self):
         print("---New round---")
+        print(f"Bankroll: {self.bankroll}")
         self.bet = 0
         self.hands = [Hand()]
 
@@ -77,7 +78,6 @@ class Player:
                 print("Invalid input")
 
     def get_bet(self):
-        print(f"Bankroll: {self.bankroll}")
         bet = int(input("Enter your bet: "))
         print()
         return bet
@@ -89,6 +89,3 @@ class Dealer:
 
     def new_round(self):
         self.hand = Hand()
-
-    def move(self):
-        pass

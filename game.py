@@ -1,6 +1,7 @@
 from card import Shoe
 from ruleset import sr
 from player import Hand, Player, Dealer
+from bot import Bot
 
 decks_in_shoe = 6
 penetration = 0.75
@@ -13,12 +14,16 @@ class Game:
     def __init__(self, ruleset=sr):
         self.shoe = Shoe(num_decks=decks_in_shoe)
         self.ruleset = ruleset
+        self.player = Bot(bankroll=bankroll)
         self.player = Player(bankroll=bankroll)
         self.dealer = Dealer()
 
     def simulate(self, max_rounds):
-        for _ in range(max_rounds):
+        for i in range(max_rounds):
             self.play_round()
+            if self.player.bankroll <= 0:
+                print(f"Player is out of money after {i} rounds")
+                break
 
     def play_round(self):
         if len(self.shoe) < reset_threshold:
@@ -54,10 +59,11 @@ class Game:
         moves = ['hit', 'stand']
         if self.ruleset.surrender:
             moves.append('surrender')
-        if len(hand) == 2 and hand[0].rank == hand[1].rank:
-            moves.append('split')
-        if not (hand.split and not self.ruleset.das):
-            moves.append('double')
+        if self.player.bankroll >= hand.bet:
+            if len(hand) == 2 and hand[0].rank == hand[1].rank:
+                moves.append('split')
+            if not (hand.split and not self.ruleset.das):
+                moves.append('double')
         return moves
 
     def play_hand(self, hand):
