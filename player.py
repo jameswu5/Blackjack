@@ -51,12 +51,16 @@ class Player:
 
     def __init__(self, bankroll):
         self.bankroll = bankroll
+        self.bet = 0
         self.hands = []
 
     def new_round(self):
+        print("---New round---")
+        self.bet = 0
         self.hands = [Hand()]
 
     def move(self, hand, dealer_hand, legal_moves):
+        print()
         print(f"Dealer's hand: {dealer_hand.cards[0]} ??")
         print(f"Your hand: {hand.get_string_for_player()}")
         while True:

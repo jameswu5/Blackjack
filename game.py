@@ -30,6 +30,7 @@ class Game:
         # Place bet
         bet = self.player.get_bet()
         self.player.hands[0].bet = bet
+        self.player.bet = bet
         self.player.bankroll -= bet
 
         # Deal cards
@@ -68,6 +69,7 @@ class Game:
             elif move == 'stand':
                 break
             elif move == 'split':
+                self.player.bet += hand.bet
                 self.player.bankroll -= hand.bet
                 hand.split = True
                 new_hand = Hand(split=True)
@@ -80,6 +82,7 @@ class Game:
                 hand.surrender = True
                 break
             elif move == 'double':
+                self.player.bet += hand.bet
                 self.player.bankroll -= hand.bet
                 hand.bet *= 2
                 hand.add_card(self.shoe.deal())
@@ -107,6 +110,8 @@ class Game:
             return 'stand'
 
     def payout(self):
+        payout = 0
+        print()
         print("---Results---")
 
         dealer_total = self.dealer.hand.total
@@ -116,23 +121,27 @@ class Game:
         for hand in self.player.hands:
             print(hand, end=" ")
             if hand.surrender:
-                self.player.bankroll += hand.bet / 2
+                payout += hand.bet // 2
                 print("(Surrender)")
             elif hand.total > 21:  # Bust
                 print("(Bust)")
             elif hand.check_blackjack() \
                     and not self.dealer.hand.check_blackjack():
                 pay = int(hand.bet * (1 + self.ruleset.blackjack_multiplier))
-                self.player.bankroll += pay
+                payout += pay
                 print("(Blackjack)")
             elif dealer_total > 21 or hand.total > dealer_total:  # Player wins
-                self.player.bankroll += hand.bet * 2
+                payout += hand.bet * 2
                 print("(Win)")
             elif hand.total == dealer_total:
-                self.player.bankroll += hand.bet  # Push
+                payout += hand.bet  # Push
                 print("(Push)")
             elif hand.total < dealer_total:  # Player loses
                 print("(Lose)")
             else:
                 raise Exception("Something went wrong")
+        print()
+        net = payout - self.player.bet
+        print(f"Bet: {self.player.bet} | Payout: {payout} | Net: {net}")
+        self.player.bankroll += payout
         print()
