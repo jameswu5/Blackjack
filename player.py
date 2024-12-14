@@ -4,6 +4,8 @@ class Hand:
         self.total = 0
         self.soft_aces = 0
         self.split = split
+        self.surrender = False
+        self.bet = 0
 
     def add_card(self, card):
         self.cards.append(card)
@@ -14,9 +16,17 @@ class Hand:
             self.total -= 10
             self.soft_aces -= 1
 
+    def check_blackjack(self):
+        return len(self) == 2 and self.total == 21
+
+    def get_string_for_player(self):
+        return f"{str(self)}{' soft' if self.soft_aces else ''}"
+
+    def __len__(self):
+        return len(self.cards)
+
     def __str__(self):
-        return ", ".join(map(str, self.cards)) \
-            + f" ({self.total}{' soft' if self.soft_aces else ''})"
+        return ", ".join(map(str, self.cards)) + f" - {self.total}"
 
 
 class Player:
@@ -27,8 +37,11 @@ class Player:
     def new_round(self):
         self.hands = [Hand()]
 
-    def move(self):
+    def move(self, hand, dealer_hand, legal_moves):
         pass
+
+    def get_bet(self):
+        return 10
 
 
 class Dealer:
