@@ -8,7 +8,6 @@ class RandomBot(Player):
         super().__init__(bankroll)
 
     def move(self, hand, dealer_hand, legal_moves):
-        # Chooses randomly for now
         return random.choice(legal_moves)
 
     def get_bet(self):
@@ -25,6 +24,7 @@ class CardCounter(Player):
 
         self.ruleset = ruleset
         self.strategy = s17_strategy if ruleset.stand_soft else h17_strategy
+        self.unit_size = bankroll // 1000
 
     def move(self, hand, dealer_hand, legal_moves):
         dealer_value = dealer_hand.cards[0].get_value()
@@ -55,4 +55,7 @@ class CardCounter(Player):
         raise ValueError(f'Invalid option: {option}')
 
     def get_bet(self):
-        return 10
+        true_count = int(round(self.observer.get_true_count()))
+        multipliers = [1, 2, 4, 8, 12, 16]
+        true_count = max(0, min(true_count, len(multipliers) - 1))
+        return self.unit_size * multipliers[true_count]
