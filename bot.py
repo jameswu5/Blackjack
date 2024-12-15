@@ -55,6 +55,4 @@ class CardCounter(Player):
         raise ValueError(f'Invalid option: {option}')
 
     def get_bet(self):
-        true_count = self.observer.get_true_count()
-        # raise NotImplementedError
         return 10
