@@ -15,7 +15,7 @@ class Game:
     def __init__(self, ruleset=sr):
         self.shoe = Shoe(num_decks=decks_in_shoe)
         self.ruleset = ruleset
-        self.observer = Observer()
+        self.observer = Observer(decks_in_shoe=decks_in_shoe)
         self.player = CardCounter(bankroll, self.observer)
         self.dealer = Dealer()
 
@@ -44,6 +44,11 @@ class Game:
         self.deal_card(self.player.hands[0])
         self.deal_card(self.dealer.hand)
         self.dealer.hand.add_card(self.shoe.deal())  # This card is not visible
+
+        # If dealer has blackjack, end round
+        if self.dealer.hand.check_blackjack():
+            self.payout(show_dealer_hand=True)
+            return
 
         # Player's turn
         i = 0
