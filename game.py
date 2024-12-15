@@ -16,7 +16,7 @@ class Game:
         self.shoe = Shoe(num_decks=decks_in_shoe)
         self.ruleset = ruleset
         self.observer = Observer(decks_in_shoe=decks_in_shoe)
-        self.player = CardCounter(bankroll, self.observer)
+        self.player = CardCounter(bankroll, self.observer, ruleset)
         self.dealer = Dealer()
 
     def simulate(self, max_rounds):
@@ -29,6 +29,7 @@ class Game:
     def play_round(self):
         if len(self.shoe) < reset_threshold:
             self.shoe.reset()
+            self.observer.reset()
 
         self.player.new_round()
         self.dealer.new_round()

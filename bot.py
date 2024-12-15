@@ -56,4 +56,5 @@ class CardCounter(Player):
 
     def get_bet(self):
         true_count = self.observer.get_true_count()
-        raise NotImplementedError
+        # raise NotImplementedError
+        return 10

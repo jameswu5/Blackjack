@@ -10,7 +10,7 @@ class Ruleset():
 
 class StandardRuleset(Ruleset):
     def __init__(self):
-        super().__init__(17, True, True, True, 1.5)
+        super().__init__(17, False, True, True, 1.5)
 
 
 sr = StandardRuleset()

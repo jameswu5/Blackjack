@@ -18,3 +18,7 @@ class Observer:
     def update(self, card):
         self.cards_seen += 1
         self.count += self.count_value[card.rank]
+
+    def reset(self):
+        self.count = 0
+        self.cards_seen = 0
