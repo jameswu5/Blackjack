@@ -1,7 +1,8 @@
 from card import Shoe
 from ruleset import sr
 from player import Hand, Player, Dealer
-from bot import Bot
+from bot import RandomBot, CardCounter
+from observer import Observer
 
 decks_in_shoe = 6
 penetration = 0.75
@@ -14,8 +15,8 @@ class Game:
     def __init__(self, ruleset=sr):
         self.shoe = Shoe(num_decks=decks_in_shoe)
         self.ruleset = ruleset
-        self.player = Player(bankroll=bankroll)
-        self.player = Bot(bankroll=bankroll)
+        self.observer = Observer()
+        self.player = CardCounter(bankroll, self.observer)
         self.dealer = Dealer()
 
     def simulate(self, max_rounds):
@@ -39,9 +40,10 @@ class Game:
         self.player.bankroll -= bet
 
         # Deal cards
-        for _ in range(2):
-            self.player.hands[0].add_card(self.shoe.deal())
-            self.dealer.hand.add_card(self.shoe.deal())
+        self.deal_card(self.player.hands[0])
+        self.deal_card(self.player.hands[0])
+        self.deal_card(self.dealer.hand)
+        self.dealer.hand.add_card(self.shoe.deal())  # This card is not visible
 
         # Player's turn
         i = 0
@@ -51,10 +53,17 @@ class Game:
 
         # Dealer's turn
         if self.player.active_hands > 0:
+            # Reveal dealer's hidden card
+            self.observer.update(self.dealer.hand[1])
             self.play_dealer()
 
         # Handle outcomes and payouts
         self.payout(self.player.active_hands > 0)
+
+    def deal_card(self, target_hand):
+        card = self.shoe.deal()
+        target_hand.add_card(card)
+        self.observer.update(card)
 
     def get_legal_moves_player(self, hand):
         moves = ['hit', 'stand']
@@ -72,7 +81,7 @@ class Game:
             move = self.player.move(hand, self.dealer.hand,
                                     self.get_legal_moves_player(hand))
             if move == 'hit':
-                hand.add_card(self.shoe.deal())
+                self.deal_card(hand)
             elif move == 'stand':
                 break
             elif move == 'split':
@@ -82,8 +91,8 @@ class Game:
                 new_hand = Hand(split=True)
                 new_hand.add_card(hand.cards.pop())
                 new_hand.bet = hand.bet
-                hand.add_card(self.shoe.deal())
-                new_hand.add_card(self.shoe.deal())
+                self.deal_card(hand)
+                self.deal_card(new_hand)
                 self.player.hands.append(new_hand)
                 self.player.active_hands += 1
             elif move == 'surrender':
@@ -106,7 +115,7 @@ class Game:
         while self.dealer.hand.total < 21:
             move = self.get_move_dealer()
             if move == 'hit':
-                self.dealer.hand.add_card(self.shoe.deal())
+                self.deal_card(self.dealer.hand)
             elif move == 'stand':
                 break
             else:
