@@ -14,8 +14,8 @@ class Game:
     def __init__(self, ruleset=sr):
         self.shoe = Shoe(num_decks=decks_in_shoe)
         self.ruleset = ruleset
-        self.player = Bot(bankroll=bankroll)
         self.player = Player(bankroll=bankroll)
+        self.player = Bot(bankroll=bankroll)
         self.dealer = Dealer()
 
     def simulate(self, max_rounds):
@@ -50,10 +50,11 @@ class Game:
             i += 1
 
         # Dealer's turn
-        self.play_dealer()
+        if self.player.active_hands > 0:
+            self.play_dealer()
 
         # Handle outcomes and payouts
-        self.payout()
+        self.payout(self.player.active_hands > 0)
 
     def get_legal_moves_player(self, hand):
         moves = ['hit', 'stand']
@@ -84,8 +85,10 @@ class Game:
                 hand.add_card(self.shoe.deal())
                 new_hand.add_card(self.shoe.deal())
                 self.player.hands.append(new_hand)
+                self.player.active_hands += 1
             elif move == 'surrender':
                 hand.surrender = True
+                self.player.active_hands -= 1
                 break
             elif move == 'double':
                 self.player.bet += hand.bet
@@ -95,6 +98,9 @@ class Game:
                 break
             else:
                 raise ValueError(f'Invalid move for player: {move}')
+
+        if hand.total > 21:
+            self.player.active_hands -= 1
 
     def play_dealer(self):
         while self.dealer.hand.total < 21:
@@ -115,13 +121,16 @@ class Game:
         else:
             return 'stand'
 
-    def payout(self):
+    def payout(self, show_dealer_hand=True):
         payout = 0
         print()
-        print("---Results---")
+        print("- Results -")
 
         dealer_total = self.dealer.hand.total
-        print(f"Dealer:\n{self.dealer.hand}")
+        if show_dealer_hand:
+            print(f"Dealer:\n{self.dealer.hand}")
+        else:
+            print(f"Dealer:\n{self.dealer.hand.cards[0]} ??")
 
         print("Player:")
         for hand in self.player.hands:

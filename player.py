@@ -53,12 +53,14 @@ class Player:
         self.bankroll = bankroll
         self.bet = 0
         self.hands = []
+        self.active_hands = 0
 
     def new_round(self):
         print("---New round---")
         print(f"Bankroll: {self.bankroll}")
         self.bet = 0
         self.hands = [Hand()]
+        self.active_hands = 1
 
     def move(self, hand, dealer_hand, legal_moves):
         print()
