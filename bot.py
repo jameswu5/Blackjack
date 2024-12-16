@@ -55,7 +55,7 @@ class CardCounter(Player):
         raise ValueError(f'Invalid option: {option}')
 
     def get_bet(self):
-        true_count = int(round(self.observer.get_true_count()))
+        true_count = self.observer.get_true_count()
         multipliers = [1, 2, 4, 8, 12, 16]
         true_count = max(0, min(true_count, len(multipliers) - 1))
         return self.unit_size * multipliers[true_count]

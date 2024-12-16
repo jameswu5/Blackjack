@@ -13,7 +13,7 @@ class Observer:
 
     def get_true_count(self):
         decks_remaining = self.decks_in_shoe - self.cards_seen / 52
-        return self.count / decks_remaining
+        return int(round(self.count / decks_remaining))
 
     def update(self, card):
         self.cards_seen += 1
