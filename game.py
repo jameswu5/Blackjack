@@ -19,9 +19,15 @@ class Game:
         self.player = CardCounter(bankroll, self.observer, ruleset)
         self.dealer = Dealer()
 
+        self.player_bankroll = [bankroll]
+        self.true_count = [0]
+
     def simulate(self, max_rounds):
         for i in range(max_rounds):
             self.play_round()
+            self.player_bankroll.append(self.player.bankroll)
+            self.true_count.append(self.observer.get_true_count())
+
             if self.player.bankroll <= 0:
                 print(f"Player is out of money after {i} rounds")
                 break
