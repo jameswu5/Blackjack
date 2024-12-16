@@ -4,9 +4,9 @@ from collections import defaultdict
 from game import Game
 
 
-def plot_simulation(rounds=1000):
+def plot_simulation():
     g = Game()
-    g.simulate(rounds)
+    g.simulate(10000)
 
     plt.figure(figsize=(10, 6))
 
@@ -29,9 +29,9 @@ def plot_simulation(rounds=1000):
     plt.show()
 
 
-def plot_simulation_together(rounds=1000):
+def plot_simulation_together():
     g = Game()
-    g.simulate(rounds)
+    g.simulate(10000)
 
     fig, ax1 = plt.subplots(figsize=(10, 4))
 
@@ -55,7 +55,7 @@ def plot_simulation_together(rounds=1000):
 
 def plot_win_data():
     g = Game()
-    g.simulate(1000)
+    g.simulate(100000)
 
     grouped_stats = defaultdict(lambda: [0, 0, 0])
     for tc, ws in zip(g.true_count, g.win_stats):
@@ -63,27 +63,35 @@ def plot_win_data():
 
     true_counts = sorted(grouped_stats.keys())
     win_stats = np.array([grouped_stats[tc] for tc in true_counts])
-
-    fig, ax = plt.subplots(figsize=(10, 6))
+    win_stats_percent = win_stats / win_stats.sum(axis=1, keepdims=True) * 100
 
     bar_width = 0.35
     index = np.arange(len(true_counts))
 
-    ax.bar(index, win_stats[:, 0], bar_width, label='Loss', color='red')
-    ax.bar(index, win_stats[:, 1], bar_width, bottom=win_stats[:, 0], label='Draw', color='blue')
-    ax.bar(index, win_stats[:, 2], bar_width, bottom=win_stats[:, 0] + win_stats[:, 1], label='Win', color='green')
+    plt.figure(figsize=(10, 6))
 
-    ax.set_xlabel('True Count')
-    ax.set_ylabel('Frequency')
-    ax.set_title('Win Stats Grouped by True Count')
-    ax.set_xticks(index)
-    ax.set_xticklabels(true_counts)
-    ax.legend()
+    plt.subplot(2, 1, 1)
+    plt.bar(index, win_stats[:, 0], bar_width, label='Loss', color='red')
+    plt.bar(index, win_stats[:, 1], bar_width, bottom=win_stats[:, 0], label='Draw', color='blue')
+    plt.bar(index, win_stats[:, 2], bar_width, bottom=win_stats[:, 0] + win_stats[:, 1], label='Win', color='green')
+    plt.ylabel('Frequency')
+    plt.title('Win Stats Grouped by True Count')
+    plt.xticks(index, true_counts)
+    plt.legend()
 
-    fig.tight_layout()
+    plt.subplot(2, 1, 2)
+    plt.bar(index, win_stats_percent[:, 0], bar_width, label='Loss', color='red')
+    plt.bar(index, win_stats_percent[:, 1], bar_width, bottom=win_stats_percent[:, 0], label='Draw', color='blue')
+    plt.bar(index, win_stats_percent[:, 2], bar_width, bottom=win_stats_percent[:, 0] + win_stats_percent[:, 1], label='Win', color='green')
+    plt.xlabel('True Count')
+    plt.ylabel('Percentage')
+    plt.xticks(index, true_counts)
+    plt.legend()
+
+    plt.tight_layout()
     plt.show()
 
 
 if __name__ == '__main__':
-    # plot_simulation_together()
+    # plot_simulation()
     plot_win_data()
