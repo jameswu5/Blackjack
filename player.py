@@ -56,8 +56,6 @@ class Player:
         self.active_hands = 0
 
     def new_round(self):
-        print("---New round---")
-        print(f"Bankroll: {self.bankroll}")
         self.bet = 0
         self.hands = [Hand()]
         self.active_hands = 1

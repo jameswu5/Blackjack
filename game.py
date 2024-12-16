@@ -27,9 +27,9 @@ class Game:
         self.new_shoes = np.array([0])
         self.win_stats = np.array([])
 
-    def simulate(self, max_rounds):
+    def simulate(self, max_rounds, verbose=False):
         while self.round < max_rounds:
-            self.play_round()
+            self.play_round(verbose)
             self.player_bankroll = np.append(self.player_bankroll, self.player.bankroll)
             self.true_count = np.append(self.true_count, self.observer.get_true_count())
 
@@ -38,7 +38,11 @@ class Game:
                 break
             self.round += 1
 
-    def play_round(self):
+    def play_round(self, verbose):
+        if verbose:
+            print("---New round---")
+            print(f"Bankroll: {self.player.bankroll}")
+
         if len(self.shoe) < reset_threshold:
             self.shoe.reset()
             self.observer.reset()
@@ -61,7 +65,7 @@ class Game:
 
         # If dealer has blackjack, end round
         if self.dealer.hand.check_blackjack():
-            self.payout(show_dealer_hand=True)
+            self.payout(verbose=verbose, show_dealer_hand=True)
             return
 
         # Player's turn
@@ -77,7 +81,7 @@ class Game:
             self.play_dealer()
 
         # Handle outcomes and payouts
-        self.payout(self.player.active_hands > 0)
+        self.payout(verbose=verbose, show_dealer_hand=self.player.active_hands > 0)
 
     def deal_card(self, target_hand):
         card = self.shoe.deal()
@@ -149,43 +153,44 @@ class Game:
         else:
             return 'stand'
 
-    def payout(self, show_dealer_hand=True):
+    def payout(self, verbose, show_dealer_hand=True):
         payout = 0
-        print()
-        print("- Results -")
+
+        output_string = "\n- Results -\n"
 
         dealer_total = self.dealer.hand.total
         if show_dealer_hand:
-            print(f"Dealer:\n{self.dealer.hand}")
+            output_string += f"Dealer:\n{self.dealer.hand}\n"
         else:
-            print(f"Dealer:\n{self.dealer.hand.cards[0]} ??")
+            output_string += f"Dealer:\n{self.dealer.hand.cards[0]} ??\n"
 
-        print("Player:")
+        output_string += "Player:\n"
         for hand in self.player.hands:
-            print(hand, end=" ")
+            output_string += str(hand) + " "
             if hand.surrender:
                 payout += hand.bet // 2
-                print("(Surrender)")
+                output_string += "(Surrender)\n"
             elif hand.total > 21:  # Bust
-                print("(Bust)")
+                output_string += "(Bust)\n"
             elif hand.check_blackjack() \
                     and not self.dealer.hand.check_blackjack():
                 pay = int(hand.bet * (1 + self.ruleset.blackjack_multiplier))
                 payout += pay
-                print("(Blackjack)")
+                output_string += "(Blackjack)\n"
             elif dealer_total > 21 or hand.total > dealer_total:  # Player wins
                 payout += hand.bet * 2
-                print("(Win)")
+                output_string += "(Win)\n"
             elif hand.total == dealer_total:
                 payout += hand.bet  # Push
-                print("(Push)")
+                output_string += "(Push)\n"
             elif hand.total < dealer_total:  # Player loses
-                print("(Lose)")
+                output_string += "(Lose)\n"
             else:
                 raise Exception("Something went wrong")
-        print()
         net = payout - self.player.bet
         self.win_stats = np.append(self.win_stats, max(-1, min(1, net)))
-        print(f"Bet: {self.player.bet} | Payout: {payout} | Net: {net}")
         self.player.bankroll += payout
-        print()
+        output_string += f"\nBet: {self.player.bet} | Payout: {payout} | Net: {net}\n\n"
+
+        if verbose:
+            print(output_string)
