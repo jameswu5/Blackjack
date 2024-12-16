@@ -1,3 +1,8 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
 """Basic strategy tables
 
 Code:
@@ -104,3 +109,27 @@ s17_strategy = {
         11: {2: "Y", 3: "Y", 4: "Y", 5: "Y", 6: "Y", 7: "Y", 8: "Y", 9: "Y", 10: "Y", 11: "Y"}
     }
 }
+
+
+def display_table(table_dict, name=None):
+    mapping = {"H": 0, "S": 1, "D": 2, "F": 3, "R": 4, "V": 5, "Y": 0, "M": 1, "N": 2}
+
+    df = pd.DataFrame(table_dict).T
+    df = df.iloc[::-1]
+    df_mapped = df.replace(mapping)
+
+    plt.figure(figsize=(12, 6))
+    sns.heatmap(df_mapped, annot=False, fmt='', cmap='coolwarm', cbar=False, linewidths=0.5)
+    plt.title(name)
+    plt.xlabel('Dealer Upcard Value')
+    plt.ylabel('Player Hand Value')
+    plt.show()
+
+
+if __name__ == '__main__':
+    display_table(h17_strategy['hard'], 'H17 - Hard')
+    display_table(h17_strategy['soft'], 'H17 - Soft')
+    display_table(h17_strategy['pairs'], 'H17 - Pairs')
+    display_table(s17_strategy['hard'], 'S17 - Hard')
+    display_table(s17_strategy['soft'], 'S17 - Soft')
+    display_table(s17_strategy['pairs'], 'S17 - Pairs')
