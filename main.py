@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import numpy as np
+from collections import defaultdict
 from game import Game
 
 
@@ -51,5 +53,37 @@ def plot_simulation_together(rounds=1000):
     plt.show()
 
 
+def plot_win_data():
+    g = Game()
+    g.simulate(1000)
+
+    grouped_stats = defaultdict(lambda: [0, 0, 0])
+    for tc, ws in zip(g.true_count, g.win_stats):
+        grouped_stats[tc][int(ws)+1] += 1
+
+    true_counts = sorted(grouped_stats.keys())
+    win_stats = np.array([grouped_stats[tc] for tc in true_counts])
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    bar_width = 0.35
+    index = np.arange(len(true_counts))
+
+    ax.bar(index, win_stats[:, 0], bar_width, label='Loss', color='red')
+    ax.bar(index, win_stats[:, 1], bar_width, bottom=win_stats[:, 0], label='Draw', color='blue')
+    ax.bar(index, win_stats[:, 2], bar_width, bottom=win_stats[:, 0] + win_stats[:, 1], label='Win', color='green')
+
+    ax.set_xlabel('True Count')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Win Stats Grouped by True Count')
+    ax.set_xticks(index)
+    ax.set_xticklabels(true_counts)
+    ax.legend()
+
+    fig.tight_layout()
+    plt.show()
+
+
 if __name__ == '__main__':
-    plot_simulation_together()
+    # plot_simulation_together()
+    plot_win_data()

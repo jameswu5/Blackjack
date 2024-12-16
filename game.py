@@ -1,3 +1,4 @@
+import numpy as np
 from card import Shoe
 from ruleset import sr
 from player import Hand, Player, Dealer
@@ -21,15 +22,16 @@ class Game:
 
         # Game information (for plotting)
         self.round = 0
-        self.player_bankroll = [bankroll]
-        self.true_count = [0]
-        self.new_shoes = [0]
+        self.player_bankroll = np.array([bankroll])
+        self.true_count = np.array([0])
+        self.new_shoes = np.array([0])
+        self.win_stats = np.array([])
 
     def simulate(self, max_rounds):
         while self.round < max_rounds:
             self.play_round()
-            self.player_bankroll.append(self.player.bankroll)
-            self.true_count.append(self.observer.get_true_count())
+            self.player_bankroll = np.append(self.player_bankroll, self.player.bankroll)
+            self.true_count = np.append(self.true_count, self.observer.get_true_count())
 
             if self.player.bankroll <= 0:
                 print(f"Player is out of money after {self.round} rounds")
@@ -40,7 +42,7 @@ class Game:
         if len(self.shoe) < reset_threshold:
             self.shoe.reset()
             self.observer.reset()
-            self.new_shoes.append(self.round)
+            self.new_shoes = np.append(self.new_shoes, self.round)
 
         self.player.new_round()
         self.dealer.new_round()
@@ -183,6 +185,7 @@ class Game:
                 raise Exception("Something went wrong")
         print()
         net = payout - self.player.bet
+        self.win_stats = np.append(self.win_stats, max(-1, min(1, net)))
         print(f"Bet: {self.player.bet} | Payout: {payout} | Net: {net}")
         self.player.bankroll += payout
         print()
