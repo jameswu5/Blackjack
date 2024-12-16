@@ -19,23 +19,28 @@ class Game:
         self.player = CardCounter(bankroll, self.observer, ruleset)
         self.dealer = Dealer()
 
+        # Game information (for plotting)
+        self.round = 0
         self.player_bankroll = [bankroll]
         self.true_count = [0]
+        self.new_shoes = [0]
 
     def simulate(self, max_rounds):
-        for i in range(max_rounds):
+        while self.round < max_rounds:
             self.play_round()
             self.player_bankroll.append(self.player.bankroll)
             self.true_count.append(self.observer.get_true_count())
 
             if self.player.bankroll <= 0:
-                print(f"Player is out of money after {i} rounds")
+                print(f"Player is out of money after {self.round} rounds")
                 break
+            self.round += 1
 
     def play_round(self):
         if len(self.shoe) < reset_threshold:
             self.shoe.reset()
             self.observer.reset()
+            self.new_shoes.append(self.round)
 
         self.player.new_round()
         self.dealer.new_round()
