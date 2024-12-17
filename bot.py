@@ -14,7 +14,7 @@ class RandomBot(Player):
         return min(self.bankroll, 100)
 
 
-class CardCounter(Player):
+class BasicStrategyBot(Player):
     def __init__(self, bankroll, observer, ruleset):
         super().__init__(bankroll)
         self.observer = observer
@@ -54,6 +54,11 @@ class CardCounter(Player):
 
         raise ValueError(f'Invalid option: {option}')
 
+    def get_bet(self):
+        return self.unit_size
+
+
+class CardCounter(BasicStrategyBot):
     def get_bet(self):
         true_count = self.observer.get_true_count()
         multipliers = [1, 2, 4, 8, 12, 16]

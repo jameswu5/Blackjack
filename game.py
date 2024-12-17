@@ -2,7 +2,7 @@ import numpy as np
 from card import Shoe
 from ruleset import sr
 from player import Hand, Player, Dealer
-from bot import RandomBot, CardCounter
+from bot import RandomBot, BasicStrategyBot, CardCounter
 from observer import Observer
 
 decks_in_shoe = 6
@@ -13,11 +13,11 @@ bankroll = 10000
 
 
 class Game:
-    def __init__(self, ruleset=sr):
+    def __init__(self, player_type, ruleset=sr):
         self.shoe = Shoe(num_decks=decks_in_shoe)
         self.ruleset = ruleset
         self.observer = Observer(decks_in_shoe=decks_in_shoe)
-        self.player = CardCounter(bankroll, self.observer, ruleset)
+        self.player = self.create_player(player_type)
         self.dealer = Dealer()
 
         # Game information (for plotting)
@@ -26,6 +26,18 @@ class Game:
         self.true_count = np.array([0])
         self.new_shoes = np.array([0])
         self.win_stats = np.array([])
+
+    def create_player(self, player_type):
+        if player_type == "human":
+            return Player(bankroll)
+        if player_type == "random":
+            return RandomBot(bankroll)
+        if player_type == "basic":
+            return BasicStrategyBot(bankroll, self.observer, self.ruleset)
+        if player_type == "counter":
+            return CardCounter(bankroll, self.observer, self.ruleset)
+
+        raise ValueError(f"Invalid player type: {player_type}")
 
     def simulate(self, max_rounds, verbose=False):
         while self.round < max_rounds:
@@ -90,7 +102,7 @@ class Game:
 
     def get_legal_moves_player(self, hand):
         moves = ['hit', 'stand']
-        if self.ruleset.surrender:
+        if self.ruleset.surrender and len(hand) == 2:
             moves.append('surrender')
         if self.player.bankroll >= hand.bet:
             if len(hand) == 2 and hand[0].rank == hand[1].rank:

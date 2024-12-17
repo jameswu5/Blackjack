@@ -3,10 +3,12 @@ import numpy as np
 from collections import defaultdict
 from game import Game
 
+player_type = "counter"
+
 
 def plot_simulation():
-    g = Game()
-    g.simulate(10000)
+    g = Game(player_type=player_type)
+    g.simulate(1000)
 
     plt.figure(figsize=(10, 6))
 
@@ -30,8 +32,8 @@ def plot_simulation():
 
 
 def plot_simulation_together():
-    g = Game()
-    g.simulate(10000)
+    g = Game(player_type=player_type)
+    g.simulate(1000)
 
     fig, ax1 = plt.subplots(figsize=(10, 4))
 
@@ -54,7 +56,7 @@ def plot_simulation_together():
 
 
 def plot_win_data():
-    g = Game()
+    g = Game(player_type=player_type)
     g.simulate(100000)
 
     grouped_stats = defaultdict(lambda: [0, 0, 0])
@@ -93,5 +95,5 @@ def plot_win_data():
 
 
 if __name__ == '__main__':
-    # plot_simulation()
-    plot_win_data()
+    plot_simulation()
+    # plot_win_data()
