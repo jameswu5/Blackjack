@@ -4,6 +4,7 @@ from collections import defaultdict
 from game import Game
 
 seed = 42
+count_system = 'classic'
 
 
 def plot_card_counter(runs=1):
@@ -23,7 +24,7 @@ def plot_card_counter(runs=1):
     for i in range(runs):
         cur_seed = seed + i if seed else None
         player_type = "counter"
-        g = Game(player_type=player_type, seed=cur_seed)
+        g = Game(player_type=player_type, count_system=count_system, seed=cur_seed)
         g.simulate(1000)
 
         plt.subplot(2, 1, 1)
@@ -44,11 +45,11 @@ def plot_final_bankroll_histogram(runs=1000, rounds=1000):
     final_bankrolls_counter = []
     for i in range(runs):
         cur_seed = seed + i if seed else None
-        g = Game(player_type="basic", seed=cur_seed)
+        g = Game(player_type="basic", count_system=count_system, seed=cur_seed)
         g.simulate(rounds)
         final_bankrolls_basic.append(g.player_bankroll[-1])
 
-        g2 = Game(player_type="counter", seed=cur_seed)
+        g2 = Game(player_type="counter", count_system=count_system, seed=cur_seed)
         g2.simulate(rounds)
         final_bankrolls_counter.append(g2.player_bankroll[-1])
 
@@ -74,7 +75,7 @@ def plot_final_bankroll_histogram(runs=1000, rounds=1000):
 
 def plot_win_data():
     player_type = "counter"
-    g = Game(player_type=player_type, seed=seed)
+    g = Game(player_type=player_type, count_system=count_system, seed=seed)
     g.simulate(100000)
 
     grouped_stats = defaultdict(lambda: [0, 0, 0])
@@ -113,6 +114,6 @@ def plot_win_data():
 
 
 if __name__ == '__main__':
-    plot_card_counter(1)
+    # plot_card_counter(1)
     # plot_win_data()
-    # plot_final_bankroll_histogram()
+    plot_final_bankroll_histogram()

@@ -13,11 +13,11 @@ bankroll = 10000
 
 
 class Game:
-    def __init__(self, player_type, ruleset=sr, seed=None):
+    def __init__(self, player_type, ruleset=sr, count_system='classic', seed=None):
         self.ruleset = ruleset
         self.seed = seed
         self.shoe = Shoe(num_decks=decks_in_shoe, seed=seed)
-        self.observer = Observer(decks_in_shoe=decks_in_shoe)
+        self.observer = Observer(decks_in_shoe=decks_in_shoe, system=count_system)
         self.player = self.create_player(player_type)
         self.dealer = Dealer()
 
