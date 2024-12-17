@@ -1,14 +1,15 @@
+import numpy as np
 from player import Player
-import random
 from strategy import h17_strategy, s17_strategy
 
 
 class RandomBot(Player):
-    def __init__(self, bankroll):
+    def __init__(self, bankroll, seed=None):
         super().__init__(bankroll)
+        self.rng = np.random.default_rng(seed)
 
     def move(self, hand, dealer_hand, legal_moves):
-        return random.choice(legal_moves)
+        return self.rng.choice(legal_moves)
 
     def get_bet(self):
         return min(self.bankroll, 100)

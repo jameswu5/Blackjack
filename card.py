@@ -1,4 +1,4 @@
-import random
+import numpy as np
 
 
 class Card:
@@ -25,8 +25,9 @@ class Card:
 
 
 class Shoe():
-    def __init__(self, num_decks):
+    def __init__(self, num_decks, seed=None):
         self.num_decks = num_decks
+        self.rng = np.random.default_rng(seed)
         self.reset()
 
     def __len__(self):
@@ -41,7 +42,7 @@ class Shoe():
             for suit in Card.suits:
                 for rank in Card.ranks:
                     self.cards.append(Card(rank, suit))
-        random.shuffle(self.cards)
+        self.rng.shuffle(self.cards)
 
     def deal(self):
         return self.cards.pop()

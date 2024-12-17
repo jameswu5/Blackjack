@@ -3,11 +3,12 @@ import numpy as np
 from collections import defaultdict
 from game import Game
 
-player_type = "counter"
+seed = 42
 
 
-def plot_simulation():
-    g = Game(player_type=player_type)
+def plot_card_counter():
+    player_type = "counter"
+    g = Game(player_type=player_type, seed=seed)
     g.simulate(1000)
 
     plt.figure(figsize=(10, 6))
@@ -31,32 +32,9 @@ def plot_simulation():
     plt.show()
 
 
-def plot_simulation_together():
-    g = Game(player_type=player_type)
-    g.simulate(1000)
-
-    fig, ax1 = plt.subplots(figsize=(10, 4))
-
-    ax1.set_xlabel('Round')
-    ax1.set_ylabel('Bankroll')
-    ax1.plot(g.player_bankroll, color='blue', alpha=0.6, label='Bankroll')
-    ax1.tick_params(axis='y')
-    plt.legend()
-
-    ax2 = ax1.twinx()
-    ax2.set_ylabel('True Count')
-    ax2.plot(g.true_count, color='purple', alpha=0.6, label='True Count')
-    ax2.axhline(0, linestyle='--', color='grey', alpha=0.3)
-    ax2.tick_params(axis='y')
-
-    plt.title('Player Bankroll and True Count')
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-
-
 def plot_win_data():
-    g = Game(player_type=player_type)
+    player_type = "counter"
+    g = Game(player_type=player_type, seed=seed)
     g.simulate(100000)
 
     grouped_stats = defaultdict(lambda: [0, 0, 0])
@@ -95,5 +73,5 @@ def plot_win_data():
 
 
 if __name__ == '__main__':
-    plot_simulation()
+    plot_card_counter()
     # plot_win_data()

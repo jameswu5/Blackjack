@@ -13,9 +13,10 @@ bankroll = 10000
 
 
 class Game:
-    def __init__(self, player_type, ruleset=sr):
-        self.shoe = Shoe(num_decks=decks_in_shoe)
+    def __init__(self, player_type, ruleset=sr, seed=None):
         self.ruleset = ruleset
+        self.seed = seed
+        self.shoe = Shoe(num_decks=decks_in_shoe, seed=seed)
         self.observer = Observer(decks_in_shoe=decks_in_shoe)
         self.player = self.create_player(player_type)
         self.dealer = Dealer()
@@ -31,7 +32,7 @@ class Game:
         if player_type == "human":
             return Player(bankroll)
         if player_type == "random":
-            return RandomBot(bankroll)
+            return RandomBot(bankroll, seed=self.seed)
         if player_type == "basic":
             return BasicStrategyBot(bankroll, self.observer, self.ruleset)
         if player_type == "counter":
