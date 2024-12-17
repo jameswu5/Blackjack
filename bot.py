@@ -12,7 +12,7 @@ class RandomBot(Player):
         return self.rng.choice(legal_moves)
 
     def get_bet(self):
-        return min(self.bankroll, 100)
+        return min(self.bankroll, 10)
 
 
 class BasicStrategyBot(Player):
@@ -56,12 +56,18 @@ class BasicStrategyBot(Player):
         raise ValueError(f'Invalid option: {option}')
 
     def get_bet(self):
-        return self.unit_size
+        return min(self.unit_size, self.bankroll)
 
 
 class CardCounter(BasicStrategyBot):
+    strategy1 = [1, 2, 5, 10, 20, 30, 40]
+    strategy2 = [1, 1, 1, 30, 30, 30, 30]
+
+    def __init__(self, bankroll, observer, ruleset, bet_strategy=strategy1):
+        super().__init__(bankroll, observer, ruleset)
+        self.bet_strategy = bet_strategy
+
     def get_bet(self):
         true_count = self.observer.get_true_count()
-        multipliers = [1, 2, 5, 10, 20, 30, 40]
-        true_count = max(0, min(true_count, len(multipliers) - 1))
-        return self.unit_size * multipliers[true_count]
+        true_count = max(0, min(true_count, len(self.bet_strategy) - 1))
+        return min(self.unit_size * self.bet_strategy[true_count], self.bankroll)
