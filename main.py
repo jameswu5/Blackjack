@@ -57,17 +57,21 @@ def plot_final_bankroll_histogram(runs=1000, rounds=1000):
 
     plt.subplot(2, 1, 1)
     plt.hist(final_bankrolls_basic, bins=50, edgecolor='black')
-    plt.axvline(np.mean(final_bankrolls_basic), color='red', linestyle='--', label='Mean')
+    mean = np.mean(final_bankrolls_basic)
+    plt.axvline(mean, color='red', linestyle='--', label='Mean: {:.2f}'.format(mean))
     plt.title('Basic Strategy')
     plt.xlabel('Final Bankroll')
     plt.ylabel('Frequency')
+    plt.legend()
 
     plt.subplot(2, 1, 2)
     plt.hist(final_bankrolls_counter, bins=50, edgecolor='black')
-    plt.axvline(np.mean(final_bankrolls_counter), color='red', linestyle='--', label='Mean')
+    mean = np.mean(final_bankrolls_counter)
+    plt.axvline(mean, color='red', linestyle='--', label='Mean: {:.2f}'.format(mean))
     plt.title('Card Counter')
     plt.xlabel('Final Bankroll')
     plt.ylabel('Frequency')
+    plt.legend()
 
     plt.tight_layout()
     plt.show()
