@@ -62,6 +62,6 @@ class BasicStrategyBot(Player):
 class CardCounter(BasicStrategyBot):
     def get_bet(self):
         true_count = self.observer.get_true_count()
-        multipliers = [1, 2, 4, 8, 12, 16]
+        multipliers = [1, 2, 5, 10, 20, 30, 40]
         true_count = max(0, min(true_count, len(multipliers) - 1))
         return self.unit_size * multipliers[true_count]

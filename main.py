@@ -6,27 +6,67 @@ from game import Game
 seed = 42
 
 
-def plot_card_counter():
-    player_type = "counter"
-    g = Game(player_type=player_type, seed=seed)
-    g.simulate(1000)
-
+def plot_card_counter(runs=1):
     plt.figure(figsize=(10, 6))
 
     plt.subplot(2, 1, 1)
     plt.title('Player Bankroll')
-    plt.plot(g.player_bankroll)
     plt.xlabel('Round')
     plt.ylabel('Bankroll')
 
     plt.subplot(2, 1, 2)
     plt.title('True Count')
-    plt.plot(g.true_count)
     plt.axhline(0, linestyle='--')
-    for i in g.new_shoes:
-        plt.axvline(i, color='grey', linestyle='--', alpha=0.5)
     plt.xlabel('Round')
     plt.ylabel('True Count')
+
+    for i in range(runs):
+        cur_seed = seed + i if seed else None
+        player_type = "counter"
+        g = Game(player_type=player_type, seed=cur_seed)
+        g.simulate(1000)
+
+        plt.subplot(2, 1, 1)
+        plt.plot(g.player_bankroll)
+
+        plt.subplot(2, 1, 2)
+        plt.plot(g.true_count)
+        if runs == 1:
+            for j in g.new_shoes:
+                plt.axvline(j, color='grey', linestyle='--', alpha=0.5)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_final_bankroll_histogram(runs=1000, rounds=1000):
+    final_bankrolls_basic = []
+    final_bankrolls_counter = []
+    for i in range(runs):
+        cur_seed = seed + i if seed else None
+        g = Game(player_type="basic", seed=cur_seed)
+        g.simulate(rounds)
+        final_bankrolls_basic.append(g.player_bankroll[-1])
+
+        g2 = Game(player_type="counter", seed=cur_seed)
+        g2.simulate(rounds)
+        final_bankrolls_counter.append(g2.player_bankroll[-1])
+
+    plt.figure(figsize=(10, 6))
+
+    plt.subplot(2, 1, 1)
+    plt.hist(final_bankrolls_basic, bins=50, edgecolor='black')
+    plt.axvline(np.mean(final_bankrolls_basic), color='red', linestyle='--', label='Mean')
+    plt.title('Basic Strategy')
+    plt.xlabel('Final Bankroll')
+    plt.ylabel('Frequency')
+
+    plt.subplot(2, 1, 2)
+    plt.hist(final_bankrolls_counter, bins=50, edgecolor='black')
+    plt.axvline(np.mean(final_bankrolls_counter), color='red', linestyle='--', label='Mean')
+    plt.title('Card Counter')
+    plt.xlabel('Final Bankroll')
+    plt.ylabel('Frequency')
 
     plt.tight_layout()
     plt.show()
@@ -73,5 +113,6 @@ def plot_win_data():
 
 
 if __name__ == '__main__':
-    plot_card_counter()
+    plot_card_counter(1)
     # plot_win_data()
+    # plot_final_bankroll_histogram()
